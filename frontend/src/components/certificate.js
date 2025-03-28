@@ -301,7 +301,7 @@ const CertificateApp = () => {
 
                   <Typography variant="body1">Module Name: {moduleDetails.mod_name}</Typography>
                   <Typography variant="body1">Technology: {moduleDetails.mod_tech}</Typography>
-                  <Typography variant="body1">Duration: {moduleDetails.mod_duration}</Typography>
+                  <Typography variant="body1">Duration Between: {moduleDetails.mod_duration}</Typography>
                 </CardContent>
               </Card>
             )}
