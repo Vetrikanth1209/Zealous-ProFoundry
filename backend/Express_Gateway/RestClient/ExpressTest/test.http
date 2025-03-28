@@ -21,9 +21,35 @@ PUT http://localhost:4000/test_gateway/test/update
 Content-Type: application/json
 
 {
-    "test_id": "9eb93e29-0857-46e3-8ffd-7fe50249eab6",
-    "mcq_id": ["78b70d32-9839-457d-870c-6c36fe2fad5d","d3d88451-7419-4bcd-ae0c-d04e515b2546","e342d539-0365-4dbc-ae2d-6117518695ed"],
-    "coding_test_id": ["coding_id-5","coding_id-6"]
+    "test_id": "4b8c798a-0e33-4685-a28a-16a4c4a2e1ea",
+    "mcq_id": [
+  "0453498a-cae3-4646-984a-098a9a0746de",
+  "36d74197-1ee9-4f2b-98fe-58a45dde858a",
+  "2c5b57c2-94b5-4a4c-be7c-f2d33addc616",
+  "f78bca45-30e9-4d23-8997-506d940556be",
+  "575933a4-edb3-4933-997d-08df21dbc85d",
+  "aaae6f5d-41a3-478c-91c8-cc56253ceb31",
+  "1573b9d5-6a75-4775-bad0-9574ea9b7eb5",
+  "c6a1dbe9-920c-4c9a-a0f2-998871455619",
+  "d53ed848-8e11-4e97-80bd-38bb067252dd",
+  "633fe7f3-d73c-4969-b48a-701e38925afa",
+  "b30fc659-0db8-49df-b506-6eab7b6e7a7b",
+  "91562c6e-0ceb-4c4e-8e1c-79740df953c3",
+  "928daa83-db92-44fe-9989-8a174a3fe344",
+  "42fd8464-a914-4195-addf-85bd79d40952",
+  "9223ae3c-6881-463b-a1e3-0a17fad34879",
+  "88ee8a37-0eb0-4f6d-92df-fded8d13226c",
+  "dc121d23-a9c7-4118-acda-909002475b83",
+  "9b977687-9154-4942-9e34-182802d4d5e3",
+  "5346fc83-7ba8-445e-bf59-14374f49c25b",
+  "a37cce77-88e8-425b-b26b-4aeebc47bb30",
+  "1a9ef2ac-f8a0-4161-a8e9-d0e97a95cee3",
+  "420230de-fbb5-4700-9805-a94842e22126",
+  "4f45a7b1-47dd-4acc-8d69-c7af0710af82",
+  "c4fe98d5-322e-4e19-997d-6cfd97403ede",
+  "3cb91a9d-fbd5-45f1-a889-7babed9f921f"
+],
+    "coding_test_id": [""]
 }
 
 ### Delete Test

@@ -45,6 +45,11 @@ const pocSchema = new mongoose.Schema({
     type: [Object], 
     default: [],
   },
+  poc_certificate: {
+    type: Boolean,
+    default: false, // Default as false (0)
+    required: false, // Not required while posting
+  },
 }, );
 
 module.exports = mongoose.model("Poc", pocSchema);

@@ -41,3 +41,18 @@ Content-Type: application/json
   "result_poc_id": "",
   "result_id": ""
 }
+
+
+
+######################
+POST  http://localhost:8000/mcq/submit_result
+Content-Type: application/json
+
+{
+  "result_user_id": "user123",
+  "result_test_id": "test456",
+  "result_score": 85,
+  "result_total_score": 100,
+  "result_poc_id": "poc789",
+  "result_id": "custom_id123"
+}

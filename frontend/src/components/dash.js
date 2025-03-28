@@ -45,7 +45,7 @@ const Dash = () => {
       >
         <Toolbar sx={{ minHeight: "56px", display: "flex", justifyContent: "space-between" }}>
           {/* Left-aligned Logo */}
-          <img src={Logo} alt="Logo" style={{ width: "150px", height: "50px" }} />
+          <img src={Logo} alt="Logo" style={{ width: "150px", height: "80px" }} />
 
           {/* Right-aligned User */}
           <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>

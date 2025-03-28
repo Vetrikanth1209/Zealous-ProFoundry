@@ -43,16 +43,22 @@ router.put('/update', async (req, res) => {
         const test = await Test.findOne({ test_id });
         if (!test) return res.status(404).json({ message: 'Test not found' });
 
-        // Add only new MCQ IDs
-        if (mcq_id) {
-            const newMcqIds = Array.isArray(mcq_id) ? mcq_id : [mcq_id];
-            test.test_mcq_id.push(...newMcqIds.filter(id => !test.test_mcq_id.includes(id)));
+        // Add only new MCQ IDs (handle array elements individually)
+        if (mcq_id && Array.isArray(mcq_id)) {
+            mcq_id.forEach(id => {
+                if (!test.test_mcq_id.includes(id)) {
+                    test.test_mcq_id.push(id);
+                }
+            });
+        } else if (mcq_id) { // If it's a single mcq_id
+            if (!test.test_mcq_id.includes(mcq_id)) {
+                test.test_mcq_id.push(mcq_id);
+            }
         }
 
-        // Add only new Coding Test IDs
-        if (coding_test_id) {
-            const newCodingIds = Array.isArray(coding_test_id) ? coding_test_id : [coding_test_id];
-            test.test_coding_id.push(...newCodingIds.filter(id => !test.test_coding_id.includes(id)));
+        // Add only new Coding Test ID (if it's not empty and not already added)
+        if (coding_test_id && coding_test_id !== "" && !test.test_coding_id.includes(coding_test_id)) {
+            test.test_coding_id.push(coding_test_id);
         }
 
         await test.save();
@@ -61,6 +67,7 @@ router.put('/update', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 // Delete Test

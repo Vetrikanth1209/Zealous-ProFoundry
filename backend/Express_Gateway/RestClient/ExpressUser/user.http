@@ -50,3 +50,8 @@ Content-Type: application/json
 
 ### Delete User
 DELETE http://localhost:4000/user_gateway/user/delete_user/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
+
+
+###############
+GET http://localhost:4000/health
+

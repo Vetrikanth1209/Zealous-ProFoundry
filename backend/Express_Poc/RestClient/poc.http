@@ -30,7 +30,7 @@ Content-Type: application/json
 
 {
     "mod_poc_id": "3fcfeeae-653a-410c-b54c-4030210b0c15",
-    "mod_tests": [],
+    "mod_tests": ["57b7bb55-a49e-4065-b38d-fbd13c396d2b","57b7bb55-a49e-4065-b38d-fbd13c396d2b"],
     "mod_users": ["1343fa0e-8b57-4b08-be4d-4ab750ec2806","717150b2-2a19-45e8-9c24-69d93b4751c2"]
 }
 

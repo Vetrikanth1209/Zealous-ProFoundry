@@ -232,6 +232,23 @@ router.get("/mod_and_poc/:user_id", async (req, res) => {
 });
 
 
+// Get poc_certificate by mod_id
+router.get('/get_poc_certificate_by_mod_id/:mod_id', async (req, res) => {
+  try {
+    const poc = await Poc.findOne({ mod_id: req.params.mod_id });
+
+    if (!poc) {
+      return res.status(404).json({ message: `POC with Module ID ${req.params.mod_id} not found` });
+    }
+
+    // Return the poc_certificate field
+    res.status(200).json({ poc_certificate: poc.poc_certificate });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching poc_certificate", error: error.message });
+  }
+});
+
+
 
 
 

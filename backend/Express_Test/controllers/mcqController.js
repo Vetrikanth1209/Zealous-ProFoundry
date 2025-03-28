@@ -178,77 +178,68 @@ router.delete('/remove_mcq/:mcq_id', async (req, res) => {
 
 router.post("/submit_result", async (req, res) => {
     try {
-      let { result_user_id, result_test_id, result_score, result_poc_id, result_id } = req.body;
+      let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
   
-      // Set default values if missing
+      // ✅ Ensure valid values
       result_id = result_id || uuidv4();
       result_user_id = result_user_id || "unknown_user";
       result_test_id = result_test_id || "unknown_test";
-      result_score = result_score !== undefined ? result_score : 0; // If missing, set score to 0
+      result_score = result_score ?? 0;
+  
+      // ✅ Ensure `result_total_score` is a **valid number**
+      if (result_total_score === undefined || result_total_score === null) {
+        console.error("❌ result_total_score is undefined or null!");
+        return res.status(400).json({ message: "result_total_score is required", value: result_total_score });
+      }
+  
+      result_total_score = Number(result_total_score);
+      if (isNaN(result_total_score)) {
+        console.error("❌ result_total_score is NaN!");
+        return res.status(400).json({ message: "Invalid result_total_score", value: result_total_score });
+      }
+  
       result_poc_id = result_poc_id || "unknown_poc";
   
-      console.log("📨 Received result data:", {
+      console.log("📨 Received result data (Before Sending):", {
         result_id,
         result_user_id,
         result_test_id,
         result_score,
+        result_total_score,
         result_poc_id,
       });
   
-      // Fetch service details from Consul
-      const serviceName = "Express_Report";
-      const services = await consul.catalog.service.nodes(serviceName);
-  
-      console.log("🔍 Retrieved services from Consul:", services);
-  
-      if (!services || services.length === 0) {
-        console.error("❌ No available service instances found in Consul");
-        return res.status(500).json({ message: "No available service instances found in Consul" });
-      }
-  
-      // Use the first available service instance
-      const { ServiceAddress, ServicePort } = services[0];
-  
-      console.log(`📡 Target Service: ${ServiceAddress}:${ServicePort}`);
-  
-      if (!ServiceAddress || !ServicePort) {
-        console.error("❌ Invalid service details from Consul:", services[0]);
-        return res.status(500).json({ message: "Invalid service details from Consul" });
-      }
-  
-      const targetUrl = `http://${ServiceAddress}:${ServicePort}/results/post-result`;
+      // ✅ Forward the request to the result service
+      const targetUrl = "http://localhost:9000/results/post-result";
       console.log(`🚀 Sending request to: ${targetUrl}`);
   
-      // Send the result data to the external service
       const response = await axios.post(targetUrl, {
         result_id,
         result_user_id,
         result_test_id,
         result_score,
+        result_total_score,
         result_poc_id,
       });
   
       console.log("✅ Response from external service:", response.data);
-  
-      res.status(200).json({
-        message: "✅ Result sent successfully to external service",
-        response: response.data,
-      });
+      res.status(200).json({ message: "✅ Result sent successfully", response: response.data });
   
     } catch (error) {
-      console.error("❌ Error sending result to external service:", error.message);
+      console.error("❌ Error sending result:", error.message);
   
       if (error.response) {
-        console.error("⚠️ Response Data:", error.response.data);
-        console.error("⚠️ Response Status:", error.response.status);
+        console.error("⚠️ Full Axios Error Response:", JSON.stringify(error.response.data, null, 2));
       }
   
       res.status(500).json({
         message: "Error sending result",
-        error: error.message,
+        error: error.response ? error.response.data : error.message,
       });
     }
   });
+  
+  
   
 
 

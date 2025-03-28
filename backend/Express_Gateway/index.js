@@ -1,10 +1,16 @@
 const express = require('express');
 require('dotenv').config();
+const cors = require('cors');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const consul = require('./middleware/consul'); // Import the Consul registration file
 
+
+
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+
+app.use(cors());
 
 // Health Check Route for Consul
 app.get('/health', (req, res) => {
