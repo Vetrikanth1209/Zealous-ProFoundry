@@ -73,49 +73,31 @@ router.get('/get_mcq/:mcq_id', async (req, res) => {
     }
 });
 
-// Update an MCQ by ID
-router.put('/update_mcq', async (req, res) => {
+router.put('/test/update', async (req, res) => {
     try {
-        const { mcq_id, ...updatedData } = req.body; // Extracting mcq_id and update fields
+        const { test_id, mcq_id } = req.body;
 
-        if (!mcq_id) {
-            return res.status(400).json({ error: "mcq_id is required" });
+        if (!test_id) {
+            return res.status(400).json({ error: "test_id is required" });
         }
 
-        const updatedMcq = await MCQ.findOneAndUpdate(
-            { mcq_id }, // Matching by mcq_id
-            { $set: updatedData }, // Updating fields dynamically
-            { new: true } // Return the updated document
+        const updatedTest = await Test.findOneAndUpdate(
+            { test_id },
+            { test_mcq_id: mcq_id },  // Only updating mcq_id
+            { new: true }
         );
 
-        if (!updatedMcq) {
-            return res.status(404).json({ message: "MCQ not found" });
+        if (!updatedTest) {
+            return res.status(404).json({ error: "Test not found" });
         }
 
-        res.status(200).json({ message: "MCQ updated successfully", mcq: updatedMcq });
+        res.status(200).json({ message: "Test updated successfully", test: updatedTest });
     } catch (error) {
-        console.error("Error updating MCQ:", error);
+        console.error("Update Test Error:", error);
         res.status(500).json({ error: error.message });
     }
 });
 
-
-// Delete an MCQ by ID
-router.delete('/remove_mcq/:mcq_id', async (req, res) => {
-    try {
-        const { mcq_id } = req.params;
-
-        const deletedMcq = await MCQ.findOneAndDelete({ mcq_id });
-
-        if (!deletedMcq) {
-            return res.status(404).json({ message: "MCQ not found" });
-        }
-
-        res.status(200).json({ message: "MCQ deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
 
 // router.post("/submit_result", async (req, res) => {
 //   try {
@@ -238,6 +220,17 @@ router.post("/submit_result", async (req, res) => {
       });
     }
   });
+
+// GET /mcq/ids - Fetch only mcq_id values
+router.get('/mcq/ids', async (req, res) => {
+    try {
+        const mcqIds = await MCQ.find({}, 'mcq_id'); // Fetch only mcq_id field
+        res.status(200).json(mcqIds.map(mcq => mcq.mcq_id)); // Send as array of IDs
+    } catch (error) {
+        console.error("Error fetching MCQ IDs:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
   
   
   

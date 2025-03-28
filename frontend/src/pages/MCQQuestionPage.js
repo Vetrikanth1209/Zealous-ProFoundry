@@ -40,17 +40,28 @@ const McqTest = () => {
       try {
         const mcqResponses = await Promise.all(
           testMcqIds.map(async (mcqId) => {
-            const res = await axios.get(`${API_BASE_URL}/mcq_gateway/mcq/get_mcq/${mcqId}`);
-            return res.data;
+            try {
+              const res = await axios.get(`${API_BASE_URL}/mcq_gateway/mcq/get_mcq/${mcqId}`);
+              return res.data;
+            } catch (err) {
+              console.error(`MCQ ${mcqId} not found`);
+              return null; // Return null for missing MCQs
+            }
           })
         );
-        setMcqs(mcqResponses);
+    
+        const validMcqs = mcqResponses.filter((mcq) => mcq !== null);
+        if (validMcqs.length === 0) {
+          setError("No valid MCQs found for this test.");
+        }
+        setMcqs(validMcqs);
       } catch (err) {
         console.error("Error fetching MCQs:", err);
         setError("Failed to load questions.");
       }
       setLoading(false);
     };
+    
 
     fetchMcqs();
 
