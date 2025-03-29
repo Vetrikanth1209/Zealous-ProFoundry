@@ -101,7 +101,7 @@ router.put('/test/update', async (req, res) => {
 
 // router.post("/submit_result", async (req, res) => {
 //   try {
-//     const { result_user_id, result_test_id, result_score, result_poc_id, result_id } = req.body;
+//     let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
 
 //     // Fetch service details from Consul
 //     const serviceName = "Express_Report";
@@ -128,13 +128,14 @@ router.put('/test/update', async (req, res) => {
 //     console.log(`🚀 Sending request to: ${targetUrl}`); // Log the exact request URL
 
 //     // Send the result data to the external service
-//     const response = await axios.post(targetUrl, {
-//       result_id: result_id || uuidv4(),
-//       result_user_id,
-//       result_test_id,
-//       result_score,
-//       result_poc_id,
-//     });
+//    const response = await axios.post(targetUrl, {
+//         result_id,
+//         result_user_id,
+//         result_test_id,
+//         result_score,
+//         result_total_score,
+//         result_poc_id,
+//       });
 
 //     console.log("✅ Response from external service:", response.data); // Log response
 
@@ -159,6 +160,7 @@ router.put('/test/update', async (req, res) => {
 // });
 
 router.post("/submit_result", async (req, res) => {
+
     try {
       let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
   

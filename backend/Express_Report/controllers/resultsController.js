@@ -14,32 +14,70 @@ router.get("/get-result", async (req, res) => {
 });
 
 // **POST - Add a New Result**
-router.post("/post-result", async (req, res) => {
+router.post("/submit_result", async (req, res) => {
   try {
-    const { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
+    let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
 
-    // ✅ Validate required fields, including `result_total_score`
-    if (!result_id || !result_user_id || !result_test_id || result_score === undefined || result_total_score === undefined || !result_poc_id) {
-      return res.status(400).json({ message: "All fields are required, including result_total_score" });
+    // ✅ Get service URL dynamically
+    const serviceName = "Express_Report";
+    const serviceUrl = await getServiceUrl(serviceName);
+
+    if (!serviceUrl) {
+      return res.status(500).json({ message: "No available service instances found in Consul" });
     }
 
-    const newResult = new Result({
-      result_id: result_id || uuidv4(),
+    const targetUrl = `${serviceUrl}/results/post-result`;
+    console.log(`🚀 Sending request to: ${targetUrl}`); // Log request URL
+
+    // ✅ Send result data to the external service
+    const response = await axios.post(targetUrl, {
+      result_id,
       result_user_id,
       result_test_id,
       result_score,
-      result_total_score, // ✅ Ensure `result_total_score` is saved in DB
+      result_total_score,
       result_poc_id,
     });
 
-    await newResult.save();
-    res.status(201).json({ message: "✅ Result added successfully", result: newResult });
+    console.log("✅ Response from external service:", response.data);
+
+    res.status(200).json({
+      message: "✅ Result sent successfully to external service",
+      response: response.data,
+    });
 
   } catch (error) {
-    console.error("❌ Error adding result:", error.message);
-    res.status(500).json({ message: "Error adding result", error });
+    console.error("❌ Error sending result to external service:", error.message);
+
+    if (error.response) {
+      console.error("⚠️ Response Data:", error.response.data);
+      console.error("⚠️ Response Status:", error.response.status);
+    }
+
+    res.status(500).json({ message: "Error sending result", error: error.message });
   }
 });
+
+// ✅ Helper function to fetch service URL from Consul
+const getServiceUrl = async (serviceName) => {
+  try {
+    console.log(`🔍 Fetching service URL for: ${serviceName}`);
+
+    const services = await consul.agent.service.list();
+    if (!services[serviceName]) {
+      console.error(`❌ Service ${serviceName} not found`);
+      return null;
+    }
+
+    const { Address, Port } = services[serviceName];
+    const serviceUrl = `http://${Address}:${Port}`;
+    console.log(`✅ Found ${serviceName} at ${serviceUrl}`);
+    return serviceUrl;
+  } catch (err) {
+    console.error(`❌ Error fetching ${serviceName} service URL:`, err.message);
+    return null;
+  }
+};
 
 
 // ✅ PUT - Update an existing result

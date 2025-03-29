@@ -30,3 +30,5 @@ Content-Type: application/json
 DELETE http://localhost:9000/results/delete-by-result-id/abcd
 Content-Type: application/json
 
+###########
+GET https://consul-jz12.onrender.com/v1/catalog/service/Express_User

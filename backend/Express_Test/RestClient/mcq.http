@@ -60,3 +60,7 @@ Content-Type: application/json
 
 #### GET MCQ ID ONLY
 GET http://localhost:8000/mcq_gateway/mcq/mcq/ids
+
+
+##########
+GET curl https://6d7f-13-71-3-99.ngrok-free.app/v1/agent/services
