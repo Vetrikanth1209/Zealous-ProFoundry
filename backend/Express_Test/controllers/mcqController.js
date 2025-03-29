@@ -73,157 +73,120 @@ router.get('/get_mcq/:mcq_id', async (req, res) => {
     }
 });
 
-router.put('/test/update', async (req, res) => {
+
+router.put("/update_mcq", async (req, res) => {
+    const { mcq_id, ...updateData } = req.body;
+
+    if (!mcq_id) {
+        return res.status(400).json({ success: false, msg: "mcq_id is required" });
+    }
+
     try {
-        const { test_id, mcq_id } = req.body;
+        const mcq = await MCQ.findOne({ mcq_id });
 
-        if (!test_id) {
-            return res.status(400).json({ error: "test_id is required" });
+        if (!mcq) {
+            return res.status(404).json({ success: false, msg: "MCQ not found" });
         }
 
-        const updatedTest = await Test.findOneAndUpdate(
-            { test_id },
-            { test_mcq_id: mcq_id },  // Only updating mcq_id
-            { new: true }
-        );
+        // Update the MCQ fields
+        Object.assign(mcq, updateData);
+        await mcq.save();
 
-        if (!updatedTest) {
-            return res.status(404).json({ error: "Test not found" });
-        }
-
-        res.status(200).json({ message: "Test updated successfully", test: updatedTest });
+        res.status(200).json({ success: true, msg: "MCQ updated successfully", mcq });
     } catch (error) {
-        console.error("Update Test Error:", error);
-        res.status(500).json({ error: error.message });
+        console.error("Update Error:", error);
+        res.status(500).json({ success: false, msg: "Server Error", error: error.message });
     }
 });
 
 
-// router.post("/submit_result", async (req, res) => {
-//   try {
-//     let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
+router.delete("/delete_mcq/:mcq_id", async (req, res) => {
+    const { mcq_id } = req.params;
 
-//     // Fetch service details from Consul
-//     const serviceName = "Express_Report";
-//     const services = await consul.catalog.service.nodes(serviceName);
-    
-//     console.log("🔍 Retrieved services from Consul:", services); // Log Consul services
-
-//     if (!services || services.length === 0) {
-//       console.error("❌ No available service instances found in Consul");
-//       return res.status(500).json({ message: "No available service instances found in Consul" });
-//     }
-
-//     // Use the first available service instance
-//     const { ServiceAddress, ServicePort } = services[0];
-
-//     console.log(`📡 Target Service: ${ServiceAddress}:${ServicePort}`); // Log target URL
-
-//     if (!ServiceAddress || !ServicePort) {
-//       console.error("❌ Invalid service details from Consul:", services[0]);
-//       return res.status(500).json({ message: "Invalid service details from Consul" });
-//     }
-
-//     const targetUrl = `http://${ServiceAddress}:${ServicePort}/results/post-result`;
-//     console.log(`🚀 Sending request to: ${targetUrl}`); // Log the exact request URL
-
-//     // Send the result data to the external service
-//    const response = await axios.post(targetUrl, {
-//         result_id,
-//         result_user_id,
-//         result_test_id,
-//         result_score,
-//         result_total_score,
-//         result_poc_id,
-//       });
-
-//     console.log("✅ Response from external service:", response.data); // Log response
-
-//     res.status(200).json({
-//       message: "✅ Result sent successfully to external service",
-//       response: response.data,
-//     });
-
-//   } catch (error) {
-//     console.error("❌ Error sending result to external service:", error.message);
-
-//     if (error.response) {
-//       console.error("⚠️ Response Data:", error.response.data);
-//       console.error("⚠️ Response Status:", error.response.status);
-//     }
-
-//     res.status(500).json({ 
-//       message: "Error sending result", 
-//       error: error.message 
-//     });
-//   }
-// });
-
-router.post("/submit_result", async (req, res) => {
+    if (!mcq_id) {
+        return res.status(400).json({ success: false, msg: "mcq_id is required" });
+    }
 
     try {
-      let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
-  
-      // ✅ Ensure valid values
-      result_id = result_id || uuidv4();
-      result_user_id = result_user_id || "unknown_user";
-      result_test_id = result_test_id || "unknown_test";
-      result_score = result_score ?? 0;
-  
-      // ✅ Ensure `result_total_score` is a **valid number**
-      if (result_total_score === undefined || result_total_score === null) {
-        console.error("❌ result_total_score is undefined or null!");
-        return res.status(400).json({ message: "result_total_score is required", value: result_total_score });
-      }
-  
-      result_total_score = Number(result_total_score);
-      if (isNaN(result_total_score)) {
-        console.error("❌ result_total_score is NaN!");
-        return res.status(400).json({ message: "Invalid result_total_score", value: result_total_score });
-      }
-  
-      result_poc_id = result_poc_id || "unknown_poc";
-  
-      console.log("📨 Received result data (Before Sending):", {
-        result_id,
-        result_user_id,
-        result_test_id,
-        result_score,
-        result_total_score,
-        result_poc_id,
-      });
-  
-      // ✅ Forward the request to the result service
-      const targetUrl = "http://localhost:9000/results/post-result";
-      console.log(`🚀 Sending request to: ${targetUrl}`);
-  
-      const response = await axios.post(targetUrl, {
-        result_id,
-        result_user_id,
-        result_test_id,
-        result_score,
-        result_total_score,
-        result_poc_id,
-      });
-  
-      console.log("✅ Response from external service:", response.data);
-      res.status(200).json({ message: "✅ Result sent successfully", response: response.data });
-  
+        const deletedMcq = await MCQ.findOneAndDelete({ mcq_id });
+
+        if (!deletedMcq) {
+            return res.status(404).json({ success: false, msg: "MCQ not found" });
+        }
+
+        res.status(200).json({ success: true, msg: "MCQ deleted successfully" });
     } catch (error) {
-      console.error("❌ Error sending result:", error.message);
-  
-      if (error.response) {
-        console.error("⚠️ Full Axios Error Response:", JSON.stringify(error.response.data, null, 2));
-      }
-  
-      res.status(500).json({
-        message: "Error sending result",
-        error: error.response ? error.response.data : error.message,
-      });
+        console.error("Delete Error:", error);
+        res.status(500).json({ success: false, msg: "Server Error", error: error.message });
     }
-  });
+});
+
+
+// Submit result to external service using consul
+
+router.post("/submit_result", async (req, res) => {
+  try {
+    let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
+
+    // Fetch service details from Consul
+    const serviceName = "Express_Report";
+    const services = await consul.catalog.service.nodes(serviceName);
+    
+    console.log("🔍 Retrieved services from Consul:", services); // Log Consul services
+
+    if (!services || services.length === 0) {
+      console.error("❌ No available service instances found in Consul");
+      return res.status(500).json({ message: "No available service instances found in Consul" });
+    }
+
+    // Use the first available service instance
+    const { ServiceAddress, ServicePort } = services[0];
+
+    console.log(`📡 Target Service: ${ServiceAddress}:${ServicePort}`); // Log target URL
+
+    if (!ServiceAddress || !ServicePort) {
+      console.error("❌ Invalid service details from Consul:", services[0]);
+      return res.status(500).json({ message: "Invalid service details from Consul" });
+    }
+
+    const targetUrl = `http://${ServiceAddress}:${ServicePort}/results/post-result`;
+    console.log(`🚀 Sending request to: ${targetUrl}`); // Log the exact request URL
+
+    // Send the result data to the external service
+   const response = await axios.post(targetUrl, {
+        result_id,
+        result_user_id,
+        result_test_id,
+        result_score,
+        result_total_score,
+        result_poc_id,
+      });
+
+    console.log("✅ Response from external service:", response.data); // Log response
+
+    res.status(200).json({
+      message: "✅ Result sent successfully to external service",
+      response: response.data,
+    });
+
+  } catch (error) {
+    console.error("❌ Error sending result to external service:", error.message);
+
+    if (error.response) {
+      console.error("⚠️ Response Data:", error.response.data);
+      console.error("⚠️ Response Status:", error.response.status);
+    }
+
+    res.status(500).json({ 
+      message: "Error sending result", 
+      error: error.message 
+    });
+  }
+});
+
 
 // GET /mcq/ids - Fetch only mcq_id values
+
 router.get('/mcq/ids', async (req, res) => {
     try {
         const mcqIds = await MCQ.find({}, 'mcq_id'); // Fetch only mcq_id field
@@ -236,7 +199,5 @@ router.get('/mcq/ids', async (req, res) => {
   
   
   
-
-
 
 module.exports = router;

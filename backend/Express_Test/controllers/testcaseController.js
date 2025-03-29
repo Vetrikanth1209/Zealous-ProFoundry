@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const TestCase = require("../models/TestCase");
+
+
 // ✅ Create TestCase
 router.post("/create_testCase", async (req, res) => {
   try {
@@ -25,6 +27,7 @@ router.post("/create_testCase", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // ✅ Get All TestCases
 router.get("/get_all_testCases", async (req, res) => {
@@ -52,26 +55,35 @@ router.get("/get_testCase_id/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-// Update TestCase (Special Update: Add code_id to testcase_id)
+
+
 router.put('/update_testCase', async (req, res) => {
   try {
-      const { testcase_id, code_id } = req.body;
-      const testCase = await TestCase.findOne({ testcase_id });
-      if (!testCase) return res.status(404).json({ message: 'TestCase not found' });
+      const { testcase_id, ...updateData } = req.body;
 
-      // Add only new Code IDs
-      if (code_id) {
-          const newCodeIds = Array.isArray(code_id) ? code_id : [code_id];
-          testCase.code_ids = testCase.code_ids || []; // Ensure the array exists
-          testCase.code_ids.push(...newCodeIds.filter(id => !testCase.code_ids.includes(id)));
+      if (!testcase_id) {
+          return res.status(400).json({ success: false, msg: "testcase_id is required" });
       }
 
+      // Find the test case by ID
+      const testCase = await TestCase.findOne({ testcase_id });
+      if (!testCase) {
+          return res.status(404).json({ success: false, msg: "TestCase not found" });
+      }
+
+      // Update the existing fields with new values
+      Object.assign(testCase, updateData);
+
+      // Save the updated test case
       await testCase.save();
-      res.status(200).json({ message: 'TestCase updated successfully', testCase });
+
+      res.status(200).json({ success: true, msg: "TestCase updated successfully", testCase });
   } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.error("Update Error:", error);
+      res.status(500).json({ success: false, msg: "Server Error", error: error.message });
   }
 });
+
 
 
 // ✅ Delete TestCase (FIXED)

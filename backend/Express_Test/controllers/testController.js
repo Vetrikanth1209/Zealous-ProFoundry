@@ -35,45 +35,51 @@ router.get('/get_by_test_id/:test_id', async (req, res) => {
 });
 
 
-// Update Test (Special Update: Add mcq_id and coding_test_id)
 router.put('/update', async (req, res) => {
     try {
-        const { test_id, mcq_id, coding_test_id } = req.body;
+        const { test_id, mcq_id, coding_test_id, ...updateData } = req.body;
 
+        if (!test_id) {
+            return res.status(400).json({ success: false, msg: "test_id is required" });
+        }
+
+        // Find the test by ID
         const test = await Test.findOne({ test_id });
-        if (!test) return res.status(404).json({ message: 'Test not found' });
-
-        // Add only new MCQ IDs (handle array elements individually)
-        if (mcq_id && Array.isArray(mcq_id)) {
-            mcq_id.forEach(id => {
-                if (!test.test_mcq_id.includes(id)) {
-                    test.test_mcq_id.push(id);
-                }
-            });
-        } else if (mcq_id) { // If it's a single mcq_id
-            if (!test.test_mcq_id.includes(mcq_id)) {
-                test.test_mcq_id.push(mcq_id);
-            }
+        if (!test) {
+            return res.status(404).json({ success: false, msg: "Test not found" });
         }
 
-        // Add only new Coding Test ID (if it's not empty and not already added)
-        if (coding_test_id && coding_test_id !== "" && !test.test_coding_id.includes(coding_test_id)) {
-            test.test_coding_id.push(coding_test_id);
+        // ✅ Update MCQ IDs (prevent duplicates)
+        if (mcq_id) {
+            const newMcqIds = Array.isArray(mcq_id) ? mcq_id : [mcq_id];
+            test.test_mcq_id = [...new Set([...test.test_mcq_id, ...newMcqIds])];
         }
 
+        // ✅ Update Coding Test IDs (prevent duplicates)
+        if (coding_test_id) {
+            const newCodingIds = Array.isArray(coding_test_id) ? coding_test_id : [coding_test_id];
+            test.test_coding_id = [...new Set([...test.test_coding_id, ...newCodingIds])];
+        }
+
+        // ✅ Update other test details
+        Object.assign(test, updateData);
+
+        // ✅ Save the updated test
         await test.save();
-        res.status(200).json({ message: 'Test updated successfully', test });
+
+        res.status(200).json({ success: true, msg: "Test updated successfully", test });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Update Error:", error);
+        res.status(500).json({ success: false, msg: "Server Error", error: error.message });
     }
 });
 
 
 
 // Delete Test
-router.delete('/delete', async (req, res) => {
+router.delete('/delete/:test_id', async (req, res) => {
     try {
-        const { test_id } = req.body;
+        const { test_id } = req.params;
         const test = await Test.findOneAndDelete({ test_id });
         if (!test) return res.status(404).json({ message: 'Test not found' });
         res.status(200).json({ message: 'Test deleted successfully' });

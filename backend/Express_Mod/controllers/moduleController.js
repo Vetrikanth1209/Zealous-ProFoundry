@@ -34,19 +34,35 @@ router.get("/get_module_by_id/:id", async (req, res) => {
   }
 });
 
-// Update Module
-router.put("/update_module/:id", async (req, res) => {
+// UPDATE MODULE (No Params, Uses Request Body)
+router.put("/update_module", async (req, res) => {
   try {
-    const module = await Module.findOneAndUpdate(
-      { mod_id: req.params.id },
-      req.body,
-      { new: true }
+    const { mod_id, ...updateFields } = req.body;
+
+    if (!mod_id) {
+      return res.status(400).json({ error: "mod_id is required" });
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ error: "At least one field to update is required" });
+    }
+
+    const updatedModule = await Module.findOneAndUpdate(
+      { mod_id },
+      { $set: updateFields },
+      { new: true, runValidators: true }
     );
-    res.json(module);
+
+    if (!updatedModule) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    res.json(updatedModule);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 // Delete Module
 router.delete("/delete_module/:id", async (req, res) => {

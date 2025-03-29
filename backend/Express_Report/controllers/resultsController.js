@@ -14,23 +14,22 @@ router.get("/get-result", async (req, res) => {
 });
 
 // **POST - Add a New Result**
-router.post("/submit_result", async (req, res) => {
+router.post("/post-result", async (req, res) => {
   try {
-    let { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
+    const { result_id, result_user_id, result_test_id, result_score, result_total_score, result_poc_id } = req.body;
 
-    // ✅ Get service URL dynamically
-    const serviceName = "Express_Report";
-    const serviceUrl = await getServiceUrl(serviceName);
-
-    if (!serviceUrl) {
-      return res.status(500).json({ message: "No available service instances found in Consul" });
+    if (!result_id || !result_user_id || !result_test_id || result_score == null || result_total_score == null || !result_poc_id) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const targetUrl = `${serviceUrl}/results/post-result`;
-    console.log(`🚀 Sending request to: ${targetUrl}`); // Log request URL
+    // Check if result_id already exists to prevent duplication
+    const existingResult = await Result.findOne({ result_id });
+    if (existingResult) {
+      return res.status(400).json({ message: "Result ID already exists" });
+    }
 
-    // ✅ Send result data to the external service
-    const response = await axios.post(targetUrl, {
+    // Store in database
+    const newResult = new Result({
       result_id,
       result_user_id,
       result_test_id,
@@ -39,24 +38,15 @@ router.post("/submit_result", async (req, res) => {
       result_poc_id,
     });
 
-    console.log("✅ Response from external service:", response.data);
+    await newResult.save();
 
-    res.status(200).json({
-      message: "✅ Result sent successfully to external service",
-      response: response.data,
-    });
-
+    res.status(201).json({ message: "✅ Result stored successfully", result: newResult });
   } catch (error) {
-    console.error("❌ Error sending result to external service:", error.message);
-
-    if (error.response) {
-      console.error("⚠️ Response Data:", error.response.data);
-      console.error("⚠️ Response Status:", error.response.status);
-    }
-
-    res.status(500).json({ message: "Error sending result", error: error.message });
+    console.error("❌ Error saving result:", error.message);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 });
+
 
 // ✅ Helper function to fetch service URL from Consul
 const getServiceUrl = async (serviceName) => {

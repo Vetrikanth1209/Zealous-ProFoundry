@@ -34,19 +34,35 @@ router.get("/get_org_by_id/:id", async (req, res) => {
   }
 });
 
-// Update Organization
-router.put("/update_org_by_id/:id", async (req, res) => {
+// UPDATE ORGANIZATION (No Params, Uses Request Body)
+router.put("/update_org_by_id", async (req, res) => {
   try {
-    const organization = await Organization.findOneAndUpdate(
-      { org_id: req.params.id },
-      req.body,
-      { new: true }
+    const { org_id, ...updateFields } = req.body;
+
+    if (!org_id) {
+      return res.status(400).json({ error: "org_id is required" });
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ error: "At least one field to update is required" });
+    }
+
+    const updatedOrganization = await Organization.findOneAndUpdate(
+      { org_id },
+      { $set: updateFields },
+      { new: true, runValidators: true }
     );
-    res.json(organization);
+
+    if (!updatedOrganization) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+
+    res.json(updatedOrganization);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 // Delete Organization
 

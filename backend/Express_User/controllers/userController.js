@@ -1,9 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
+ // Add this at the top of your file
 
 
 // Login User and generate JWT token
@@ -30,7 +32,7 @@ router.post('/login', async (req, res) => {
                 full_name: user.full_name
             },
             process.env.JWT_SECRET, // Use the secret key from the .env file
-            { expiresIn: '10h' }  // Token expiration time (10 hours)
+            { expiresIn: '10h' , algorithm: "HS256"}  // Token expiration time (10 hours)
         );
 
         // Return the JWT token and user information

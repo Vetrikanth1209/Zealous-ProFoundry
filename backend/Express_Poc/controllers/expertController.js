@@ -43,12 +43,16 @@ router.get('/get_expert/:mod_expert_id', async (req, res) => {
     }
 });
 
-// Update Expert by mod_expert_id
-router.put('/update_expert/:mod_expert_id', async (req, res) => {
+// UPDATE EXPERT (No `req.params`, Uses `req.body`)
+router.put('/update_expert', async (req, res) => {
     try {
+        const { mod_expert_id, ...updateData } = req.body;
+
+        if (!mod_expert_id) return res.status(400).json({ error: 'mod_expert_id is required' });
+
         const updatedExpert = await Expert.findOneAndUpdate(
-            { mod_expert_id: req.params.mod_expert_id },
-            req.body,
+            { mod_expert_id },
+            updateData,
             { new: true, runValidators: true }
         );
 
@@ -60,18 +64,18 @@ router.put('/update_expert/:mod_expert_id', async (req, res) => {
     }
 });
 
-// Update poc_id separately by mod_expert_id 
-router.put('/update_poc/:mod_expert_id', async (req, res) => {
+// UPDATE POC_ID (No `req.params`, Uses `req.body`)
+router.put('/update_poc', async (req, res) => {
     try {
-        const { poc_id } = req.body;
+        const { mod_expert_id, poc_id } = req.body;
 
-        if (!poc_id || !Array.isArray(poc_id)) {
-            return res.status(400).json({ error: 'poc_id must be an array' });
+        if (!mod_expert_id || !poc_id || !Array.isArray(poc_id)) {
+            return res.status(400).json({ error: 'mod_expert_id and poc_id (array) are required' });
         }
 
         const updatedExpert = await Expert.findOneAndUpdate(
-            { mod_expert_id: req.params.mod_expert_id },
-            { $addToSet: { poc_id: { $each: poc_id } } }, // Add new unique values
+            { mod_expert_id },
+            { $addToSet: { poc_id: { $each: poc_id } } }, // Add unique values
             { new: true, runValidators: true }
         );
 
@@ -83,18 +87,18 @@ router.put('/update_poc/:mod_expert_id', async (req, res) => {
     }
 });
 
-// Update mod_id separately by mod_expert_id 
-router.put('/update_mod/:mod_expert_id', async (req, res) => {
+// UPDATE MOD_ID (No `req.params`, Uses `req.body`)
+router.put('/update_mod', async (req, res) => {
     try {
-        const { mod_id } = req.body;
+        const { mod_expert_id, mod_id } = req.body;
 
-        if (!mod_id || !Array.isArray(mod_id)) {
-            return res.status(400).json({ error: 'mod_id must be an array' });
+        if (!mod_expert_id || !mod_id || !Array.isArray(mod_id)) {
+            return res.status(400).json({ error: 'mod_expert_id and mod_id (array) are required' });
         }
 
         const updatedExpert = await Expert.findOneAndUpdate(
-            { mod_expert_id: req.params.mod_expert_id },
-            { $addToSet: { mod_id: { $each: mod_id } } }, // Add new unique values
+            { mod_expert_id },
+            { $addToSet: { mod_id: { $each: mod_id } } }, // Add unique values
             { new: true, runValidators: true }
         );
 

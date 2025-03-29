@@ -14,14 +14,14 @@ Content-Type: application/json
 GET http://localhost:4000/test_gateway/test/all
 
 ### Get Test by ID
-GET http://localhost:4000/test_gateway/test/get_by_test_id/9eb93e29-0857-46e3-8ffd-7fe50249eab6
+GET http://localhost:4000/test_gateway/test/get_by_test_id/c972f593-757f-40f1-9228-4ba6a26dead2
 
 ### Update Test (Add MCQ & Coding Test ID)
 PUT http://localhost:4000/test_gateway/test/update
 Content-Type: application/json
 
 {
-    "test_id": "b2b727d1-f034-4636-9a28-b6cd84d07043",
+    "test_id": "c972f593-757f-40f1-9228-4ba6a26dead2",
     "mcq_id":[
   "0453498a-cae3-4646-984a-098a9a0746de",
   "36d74197-1ee9-4f2b-98fe-58a45dde858a",
@@ -77,20 +77,16 @@ Content-Type: application/json
 }
 
 ### Delete Test
-DELETE http://localhost:4000/test_gateway/test/delete
+DELETE http://localhost:4000/test_gateway/test/delete/c972f593-757f-40f1-9228-4ba6a26dead2
 Content-Type: application/json
-
-{
-    "test_id": "e2231823-e386-4e63-adf6-52795b74d382"
-}
 
 ### Remove MCQ from Test Using Test ID & MCQ ID
 PUT http://localhost:4000/test_gateway/test/remove_mcq_from_test
 Content-Type: application/json
 
 {
-    "test_id": "9eb93e29-0857-46e3-8ffd-7fe50249eab6",
-    "mcq_id": "d3d88451-7419-4bcd-ae0c-d04e515b2546"
+    "test_id": "c972f593-757f-40f1-9228-4ba6a26dead2",
+    "mcq_id": "85de61ee-e92a-471b-bb5b-a783dcc55da4"
 }
 
 

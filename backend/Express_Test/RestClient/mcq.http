@@ -13,14 +13,14 @@ Content-Type: application/json
 GET http://localhost:8000/mcq/get_all_mcqs
 
 ### Get a Single MCQ by ID
-GET http://localhost:8000/mcq/get_mcq/1742981934515
+GET http://localhost:8000/mcq/get_mcq/dcedaa95-7985-476e-9252-8a043efc343a
 
 ### Update MCQ
-PUT http://localhost:8000/mcq/update_mcq/
+PUT http://localhost:8000/mcq/update_mcq
 Content-Type: application/json
 
 {
-    "mcq_id": "49e38dce-e39f-4a59-9d8c-f44b3ce4985b",
+    "mcq_id": "dcedaa95-7985-476e-9252-8a043efc343a",
     "mcq_question": "What is JavaScript?",
     "mcq_options": ["Runtime", "Library", "Framework", "Language"],
     "mcq_answer": "Language",
@@ -28,7 +28,7 @@ Content-Type: application/json
 }
 
 ### Delete MCQ
-DELETE http://localhost:8000/mcq/remove_mcq/8ffd4d6b-9de0-4b18-b4bc-3bde05ced2b0
+DELETE http://localhost:8000/mcq/delete_mcq/dcedaa95-7985-476e-9252-8a043efc343a
 
 ### Submit Result to External Service via Consul
 POST http://localhost:8000/mcq/submit_result
@@ -49,18 +49,17 @@ POST  http://localhost:8000/mcq/submit_result
 Content-Type: application/json
 
 {
-  "result_user_id": "user123",
-  "result_test_id": "test456",
+  "result_user_id": "user2321",
+  "result_test_id": "test434",
   "result_score": 85,
   "result_total_score": 100,
-  "result_poc_id": "poc789",
-  "result_id": "custom_id123"
+  "result_poc_id": "poc674",
+  "result_id": "custom_id64"
 }
 
 
 #### GET MCQ ID ONLY
-GET http://localhost:8000/mcq_gateway/mcq/mcq/ids
+GET http://localhost:8000/mcq/mcq/ids
 
 
-##########
-GET curl https://6d7f-13-71-3-99.ngrok-free.app/v1/agent/services
+

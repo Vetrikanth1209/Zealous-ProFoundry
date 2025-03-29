@@ -2,15 +2,17 @@
 GET http://localhost:9000/results/get-result
 Content-Type: application/json
 
-### Add a New Result
-POST  http://localhost:9000/results/post-result
+### Add a New Result### Submit a new result
+POST http://localhost:9000/results/post-result
 Content-Type: application/json
 
-{ "result_id":"abcd",
-  "result_user_id": "user982",
-  "result_test_id": "test956",
-  "result_score": 97,
-  "result_poc_id": "poc785"
+{
+  "result_id": "res_12345",
+  "result_user_id": "user_67890",
+  "result_test_id": "test_001",
+  "result_score": 85,
+  "result_total_score": 100,
+  "result_poc_id": "poc_98765"
 }
 
 ### Update a Result

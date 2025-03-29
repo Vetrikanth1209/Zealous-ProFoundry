@@ -3,7 +3,7 @@ POST http://localhost:5000/modules/add_module
 Content-Type: application/json
 
 {
-  "mod_name": "Full Stack Development",
+  "mod_name": "MERN Stack Development",
   "mod_tech": "MERN",
   "mod_duration": "6 months"
 }
@@ -12,20 +12,21 @@ Content-Type: application/json
 GET http://localhost:5000/modules/get_all_module
 
 ### Get Module by ID
-GET http://localhost:5000/modules/get_module_by_id/6503caf1-fb75-4640-99f2-d6a529b71205
+GET http://localhost:5000/modules/get_module_by_id/f4e59446-5b4b-4504-8932-f10f07794a90
 
 ### Update Module
-PUT http://localhost:5000/modules/update_module/bb38fac7-6a3f-4f31-b670-eec4975888ca
+PUT http://localhost:5000/modules/update_module
 Content-Type: application/json
 
 {
+  "mod_id": "f4e59446-5b4b-4504-8932-f10f07794a90",
   "mod_name": "Advanced Full Stack",
   "mod_tech": "MERN + React Native",
   "mod_duration": "8 months"
 }
 
 ###  Delete Module
-DELETE http://localhost:5000/modules/delete_module/bb38fac7-6a3f-4f31-b670-eec4975888ca
+DELETE http://localhost:5000/modules/delete_module/f4e59446-5b4b-4504-8932-f10f07794a90
 
 ### Get Module Name by ID
-GET http://localhost:5000/modules/get_module_name_by_id/6503caf1-fb75-4640-99f2-d6a529b71205
+GET http://localhost:5000/modules/get_module_name_by_id/f4e59446-5b4b-4504-8932-f10f07794a90
